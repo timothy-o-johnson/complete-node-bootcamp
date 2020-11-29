@@ -51,7 +51,8 @@ const server = http.createServer((req, res) => {
   } else if (pathName === '/dog') {
     res.end(`We've received '${pathName}' in 2nd block.`)
   } else if (pathName === '/api') {
-   
+  
+   // add API  
     fs.readFile('./dev-data/data.json', 'utf-8', (err, devData) => {
      
       console.log(`data3: ${devData}`)
