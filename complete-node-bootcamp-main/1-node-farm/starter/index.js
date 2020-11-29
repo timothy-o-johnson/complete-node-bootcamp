@@ -40,7 +40,7 @@ const http = require('http')
 //
 ////
 
-
+const apiData = fs.readFileSync('./dev-data/data.json', 'utf-8')
 
 const server = http.createServer((req, res) => {
   console.log('req', req.url)
@@ -51,20 +51,15 @@ const server = http.createServer((req, res) => {
   } else if (pathName === '/dog') {
     res.end(`We've received '${pathName}' in 2nd block.`)
   } else if (pathName === '/api') {
-  
-   // add API  
-    fs.readFile('./dev-data/data.json', 'utf-8', (err, devData) => {
-     
-      console.log(`data3: ${devData}`)
+    // add API
+    console.log('getting apiData...', apiData)
 
-      res.writeHead(200, {
-        'Content-Type': 'application/JSON',
-        myOwnHeader: 'hello, world'
-      })
-
-      res.end(devData)
+    res.writeHead(200, {
+      'Content-Type': 'application/JSON',
+      myOwnHeader: 'hello, world'
     })
 
+    res.end(apiData)
   } else {
     res.writeHead(200, {
       // 'Content-Type': 'text/html',
