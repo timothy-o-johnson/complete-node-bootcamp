@@ -46,8 +46,15 @@ const server = http.createServer((req, res) => {
   console.log('req', req.url)
   const pathName = req.url
 
+  // Landing/Overview Page
   if (pathName === '/' || pathName === '/overview') {
-    res.end(`We've received '${pathName}' in 1st block.`)
+    const overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`)
+    res.writeHead(200, {
+      'Content-Type': 'text/HTML',
+      myOwnHeader: 'hello, world'
+    })
+
+    res.end(overviewHTML)
   } else if (pathName === '/dog') {
     res.end(`We've received '${pathName}' in 2nd block.`)
   } else if (pathName === '/api') {
