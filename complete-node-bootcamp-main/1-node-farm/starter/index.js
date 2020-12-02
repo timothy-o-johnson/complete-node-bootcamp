@@ -87,7 +87,7 @@ const server = http.createServer((req, res) => {
 
     const cardsHTML = dataObj.map(el => {
       return replaceTemplate(cardTemplateHTML, el)
-    })
+    }).join('')
 
     const overviewHTML = overviewTemplateHTML.replace(/{%PRODUCT_CARDS%}/g, cardsHTML)
 
