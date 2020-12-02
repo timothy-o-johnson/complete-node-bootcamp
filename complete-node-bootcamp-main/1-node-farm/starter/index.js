@@ -53,7 +53,7 @@ const replaceTemplate = (template, product) => {
   output = output.replace(/{%NUTRIENTS%}/g, product.nutrients)
   output = output.replace(/{%FROM%}/g, product.from)
 
-  if (!product.organic) output = output.replace(/{%ORGANIC%}/g, `.not-organic`)
+  if (!product.organic) output = output.replace(/{%ORGANIC%}/g, `not-organic`)
 
   console.log('*** output ***\n', output)
   return output
@@ -85,14 +85,9 @@ const server = http.createServer((req, res) => {
       'Content-type': 'text/html'
     })
 
-
-    
     const cardsHTML = dataObj.map(el => {
       return replaceTemplate(cardTemplateHTML, el)
     })
-
-    console.log('cardsHTML', cardsHTML)
-    console.log('********* END cardsHTML *********')
 
     const overviewHTML = overviewTemplateHTML.replace(/{%PRODUCT_CARDS%}/g, cardsHTML)
 
