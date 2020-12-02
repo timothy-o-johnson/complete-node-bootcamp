@@ -40,7 +40,40 @@ const http = require('http')
 //
 ////
 
-const apiData = fs.readFileSync('./dev-data/data.json', 'utf-8')
+const replaceTemplate = (template, product) => {
+  console.log('*** template *** \n', template)
+  console.log('*** product ***\n', product)
+  
+  let output = template.replace(/{%PRODUCTNAME%}/g, product.productName)
+  output = output.replace(/{%IMAGE%}/g, product.image)
+  output = output.replace(/{%QUANTITY%}/g, product.quantity)
+  output = output.replace(/{%PRICE%}/g, product.price)
+  output = output.replace(/{%DESCRIPTION%}/g, product.quantity)
+  output = output.replace(/{%ID%}/g, product.id)
+  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients)
+  output = output.replace(/{%FROM%}/g, product.from)
+
+  if (!product.organic) output = output.replace(/{%ORGANIC%}/g, `.not-organic`)
+
+  console.log('*** output ***\n', output)
+  return output
+}
+
+const overviewTemplateHTML = fs.readFileSync(
+  `${__dirname}/templates/overview-template.html`,
+  'utf-8'
+)
+const cardTemplateHTML = fs.readFileSync(
+  `${__dirname}/templates/card-template.html`,
+  'utf-8'
+)
+const productTemplateHTML = fs.readFileSync(
+  `${__dirname}/templates/product-template.html`,
+  'utf-8'
+)
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
+const dataObj = JSON.parse(data)
 
 const server = http.createServer((req, res) => {
   console.log('req', req.url)
@@ -48,17 +81,40 @@ const server = http.createServer((req, res) => {
 
   // Landing/Overview Page
   if (pathName === '/' || pathName === '/overview') {
-    const overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`)
     res.writeHead(200, {
-      'Content-Type': 'text/HTML',
+      'Content-type': 'text/html'
+    })
+
+
+    
+    const cardsHTML = dataObj.map(el => {
+      return replaceTemplate(cardTemplateHTML, el)
+    })
+
+    console.log('cardsHTML', cardsHTML)
+    console.log('********* END cardsHTML *********')
+
+    const overviewHTML = overviewTemplateHTML.replace(/{%PRODUCT_CARDS%}/g, cardsHTML)
+
+    // console.log(overviewHTML)
+
+    res.end(overviewHTML)
+
+    // Overview Template
+  } else if (pathName === '/overview-template') {
+    res.writeHead(200, {
+      'Content-type': 'text/HTML',
       myOwnHeader: 'hello, world'
     })
 
-    res.end(overviewHTML)
+    res.end(overviewTemplateHTML)
+
+    // Dog
   } else if (pathName === '/dog') {
     res.end(`We've received '${pathName}' in 2nd block.`)
+
+    // API
   } else if (pathName === '/api') {
-    // add API
     console.log('getting apiData...', apiData)
 
     res.writeHead(200, {
@@ -67,6 +123,8 @@ const server = http.createServer((req, res) => {
     })
 
     res.end(apiData)
+
+    // Not Found
   } else {
     res.writeHead(200, {
       // 'Content-Type': 'text/html',
