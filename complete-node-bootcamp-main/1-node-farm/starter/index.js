@@ -1,5 +1,6 @@
 const fs = require('fs')
 const http = require('http')
+const url = require('url')
 
 // // Blocking, sychronous way
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8')
@@ -41,9 +42,6 @@ const http = require('http')
 ////
 
 const replaceTemplate = (template, product) => {
-  console.log('*** template *** \n', template)
-  console.log('*** product ***\n', product)
-  
   let output = template.replace(/{%PRODUCTNAME%}/g, product.productName)
   output = output.replace(/{%IMAGE%}/g, product.image)
   output = output.replace(/{%QUANTITY%}/g, product.quantity)
@@ -53,9 +51,9 @@ const replaceTemplate = (template, product) => {
   output = output.replace(/{%NUTRIENTS%}/g, product.nutrients)
   output = output.replace(/{%FROM%}/g, product.from)
 
-  if (!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, `not-organic`)
+  if (!product.organic)
+    output = output.replace(/{%NOT_ORGANIC%}/g, `not-organic`)
 
-  console.log('*** output ***\n', output)
   return output
 }
 
@@ -76,40 +74,50 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
 const dataObj = JSON.parse(data)
 
 const server = http.createServer((req, res) => {
-  console.log('req', req.url)
-  const pathName = req.url
+  const { query, pathname } = url.parse(req.url, true)
 
   // Landing/Overview Page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {
       'Content-type': 'text/html'
     })
 
-    const cardsHTML = dataObj.map(el => {
-      return replaceTemplate(cardTemplateHTML, el)
-    }).join('')
+    const cardsHTML = dataObj
+      .map(el => {
+        return replaceTemplate(cardTemplateHTML, el)
+      })
+      .join('')
 
-    const overviewHTML = overviewTemplateHTML.replace(/{%PRODUCT_CARDS%}/g, cardsHTML)
+    const overviewHTML = overviewTemplateHTML.replace(
+      /{%PRODUCT_CARDS%}/g,
+      cardsHTML
+    )
 
     // console.log(overviewHTML)
 
     res.end(overviewHTML)
 
     // Overview Template
-  } else if (pathName === '/overview-template') {
+  } else if (pathname === '/overview-template') {
     res.writeHead(200, {
-      'Content-type': 'text/HTML',
-      myOwnHeader: 'hello, world'
+      'Content-type': 'text/HTML'
     })
 
     res.end(overviewTemplateHTML)
 
-    // Dog
-  } else if (pathName === '/dog') {
-    res.end(`We've received '${pathName}' in 2nd block.`)
+    // product page
+  } else if (pathname === '/product') {
+    const product = dataObj[query.id]
+    const productHTML = replaceTemplate(productTemplateHTML, product)
+     res.writeHead(200, {
+      'Content-type': 'text/HTML'
+    })
+
+
+    res.end(productHTML)
 
     // API
-  } else if (pathName === '/api') {
+  } else if (pathname === '/api') {
     console.log('getting apiData...', apiData)
 
     res.writeHead(200, {
@@ -125,7 +133,7 @@ const server = http.createServer((req, res) => {
       // 'Content-Type': 'text/html',
       myOwnHeader: 'hello, world'
     })
-    res.end(`<h1>Hello from the someplace unexpected! ('${pathName}')<h1>`)
+    res.end(`<h1>Hello from the someplace unexpected! ('${pathname}')<h1>`)
   }
 })
 
