@@ -1,0 +1,17 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "node practice",
+  "main": "index.js",
+  "scripts": {
+    "start": "sudo nodemon index.js"
+  },
+  "author": "pavementii@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "slugify": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
