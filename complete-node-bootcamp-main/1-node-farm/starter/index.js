@@ -2,6 +2,10 @@ const fs = require('fs')
 const http = require('http')
 const url = require('url')
 
+const slugify = require('slugify')
+
+console.log(slugify('many different avocados'))
+
 const replaceTemplate = require('./modules/replaceTemplate')
 
 // // Blocking, sychronous way
@@ -61,6 +65,9 @@ const productTemplateHTML = fs.readFileSync(
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
 const dataObj = JSON.parse(data)
 
+const slugs = dataObj.map((el)=> { return slugify(el.productName,  {lower: true})})
+console.log(slugs)
+
 const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true)
 
@@ -100,7 +107,6 @@ const server = http.createServer((req, res) => {
      res.writeHead(200, {
       'Content-type': 'text/HTML'
     })
-
 
     res.end(productHTML)
 
