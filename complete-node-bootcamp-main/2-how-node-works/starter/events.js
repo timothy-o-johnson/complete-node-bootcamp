@@ -1,4 +1,6 @@
 const EventEmitter = require('events')
+const http = require('http')
+
 const myEmitter = new EventEmitter()
 
 myEmitter.on('newSale', () => {
@@ -38,3 +40,20 @@ dogSale.on('newSale', (unitsSold) => {
 
 // better to create a class and ext
 dogSale.emit('newSale', 10)
+
+//// HTTP  example
+
+const server = http.createServer()
+
+server.on('request', (req, res) =>{
+    console.log('Request received!')
+    // res.end('Request received')
+})
+
+server.on('request', (req, res) =>{
+    console.log('2nd request received!')
+    res.end('Request received! :)')
+})
+
+server.listen(8000, '127.0.0.1',() =>{ console.log('Waiting (listening) for requests...');
+})
