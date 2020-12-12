@@ -18,8 +18,14 @@ console.log(calculator.add(5, 2));
 console.log(calculator.divide(5, 2.5));
 
 // exports
-const calc2 = require("./test-module-2")
+// const calc2 = require("./test-module-2")
 
-console.log('calc2, multiply: ', calc2.multiply(5, 2));
-console.log('calc2, add: ', calc2.add(5, 2));
-console.log('calc2, divide: ', calc2.divide(5, 2.5));
+// console.log('calc2, multiply: ', calc2.multiply(5, 2));
+// console.log('calc2, add: ', calc2.add(5, 2));
+// console.log('calc2, divide: ', calc2.divide(5, 2.5));
+
+const { multiply, add, divide } = require("./test-module-2")
+
+console.log('multiply: ', multiply(5, 2));
+console.log('add: ', add(5, 2));
+console.log('divide: ', divide(5, 2.5));
