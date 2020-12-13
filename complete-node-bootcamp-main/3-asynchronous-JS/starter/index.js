@@ -15,19 +15,33 @@ const writeFilePro = (file, data) => {
     fs.writeFile(file, data, err => {
       if (err) reject(err)
       resolve(data)
-    })
+    }) 
   })
 }
 
 const asyncAwaitPractice = async () => {
   try {
     const fileData = await readFilePro(`${__dirname}/dog.txt`)
-    const superAgentData = await superagent.get(
-      `https://dog.ceo/api/breed/${fileData}/images/random`
-    )
-    var superAgentDataTextMessage = JSON.parse(superAgentData.text).message
-    //   console.log(`data from superagent: ${superAgentDataTextMessage}\n`)
-    const final = await writeFilePro('dog-img.txt', superAgentData)
+    var dogImageUrl = `https://dog.ceo/api/breed/${fileData}/images/random`
+
+    const superAgentData1 = superagent.get(dogImageUrl)
+    const superAgentData2 = superagent.get(dogImageUrl)
+    const superAgentData3 = superagent.get(dogImageUrl)
+
+    let imgs = await Promise.all([
+      superAgentData1,
+      superAgentData2,
+      superAgentData3
+    ])
+
+    imgs = imgs.map(el => {
+      return JSON.parse(el.text).message
+    })
+    console.log('imgs', imgs)
+
+    var superAgentDataTextMessage = imgs.join('\n')
+
+    const final = await writeFilePro('dog-img.txt', superAgentDataTextMessage)
 
     console.log('asyncAwaitPractice(): all done 🥳')
   } catch (err) {
