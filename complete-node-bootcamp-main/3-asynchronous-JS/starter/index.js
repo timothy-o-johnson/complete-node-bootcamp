@@ -19,25 +19,44 @@ const writeFilePro = (file, data) => {
   })
 }
 
-readFilePro(`${__dirname}/dog.txt`)
-  .then(data => {
-    console.log(`data from readFilePro: ${data}\n`)
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`)
-  })
-  .then(data => {
-    var dataTextMessage = JSON.parse(data.text).message
-    // console.log('dataTextMessage', dataTextMessage);
+const asyncAwaitPractice = async () => {
+    try {
+      const fileData = await readFilePro(`${__dirname}/dog.txt`)
+      const superAgentData = await superagent.get(
+        `https://dog.ceo/api/breed/${fileData}/images/random`
+      )
+      var superAgentDataTextMessage = JSON.parse(superAgentData.text).message
+      console.log(`data from superagent: ${superAgentDataTextMessage}\n`)
+      const final = await writeFilePro('dog-img.txt', superAgentData)
+  
+      console.log('all done 🥳')
+    } catch (err) {
+      console.log('error: ', err)
+    }
+  }
+  
+  asyncAwaitPractice()
 
-    console.log(`data from superagent: ${dataTextMessage}\n`)
-    return writeFilePro('dog-img.txt', data)
-  })
-  .then(data => {
-    data = JSON.stringify(data)
-    // console.log(`data from writeFilePro: ${data}\n`)
-    console.log('all done! 🥳'); 
-    
-  })
-  .catch(err => console.log(err))
+// readFilePro(`${__dirname}/dog.txt`)
+//   .then(data => {
+//     console.log(`data from readFilePro: ${data}\n`)
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`)
+//   })
+//   .then(data => {
+//     var dataTextMessage = JSON.parse(data.text).message
+//     // console.log('dataTextMessage', dataTextMessage);
+
+//     console.log(`data from superagent: ${dataTextMessage}\n`)
+//     return writeFilePro('dog-img.txt', data)
+//   })
+//   .then(data => {
+//     data = JSON.stringify(data)
+//     // console.log(`data from writeFilePro: ${data}\n`)
+//     console.log('all done! 🥳');
+
+//   })
+//   .catch(err => console.log(`Uh oh.... ${err}`))
+
 
 // fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
 //   console.log(`Breed: ${data}`)
