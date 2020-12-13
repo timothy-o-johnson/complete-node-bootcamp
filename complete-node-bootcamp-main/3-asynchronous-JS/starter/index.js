@@ -20,24 +20,37 @@ const writeFilePro = (file, data) => {
 }
 
 const asyncAwaitPractice = async () => {
-    try {
-      const fileData = await readFilePro(`${__dirname}/dog.txt`)
-      const superAgentData = await superagent.get(
-        `https://dog.ceo/api/breed/${fileData}/images/random`
-      )
-      var superAgentDataTextMessage = JSON.parse(superAgentData.text).message
+  try {
+    const fileData = await readFilePro(`${__dirname}/dog.txt`)
+    const superAgentData = await superagent.get(
+      `https://dog.ceo/api/breed/${fileData}/images/random`
+    )
+    var superAgentDataTextMessage = JSON.parse(superAgentData.text).message
     //   console.log(`data from superagent: ${superAgentDataTextMessage}\n`)
-      const final = await writeFilePro('dog-img.txt', superAgentData)
-  
-      console.log('asyncAwaitPractice(): all done 🥳')
-    } catch (err) {
-      console.log('error: ', err)
-    }
+    const final = await writeFilePro('dog-img.txt', superAgentData)
+
+    console.log('asyncAwaitPractice(): all done 🥳')
+  } catch (err) {
+    // console.log('error: ', err)
+    throw 'error in asyncAwaitPractice'
   }
-  console.log('1: prior to async function');
-  const asyncCall = asyncAwaitPractice()
-  console.log('2: asyncAwaitPractice() call:', asyncCall);
-  console.log('3: after to async function');
+}
+
+;(async () => {
+  try {
+    console.log('1: prior to async function')
+    const asyncCall = await asyncAwaitPractice()
+    console.log('3: after to async function')
+  } catch (err) {
+    console.log('error: ', err)
+    throw 'error in parent scope 🔥 '
+  }
+})()
+
+//   console.log('1: prior to async function');
+//   const asyncCall = asyncAwaitPractice()
+//   console.log('2: asyncAwaitPractice() call:', asyncCall);
+//   console.log('3: after to async function');
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then(data => {
@@ -58,7 +71,6 @@ const asyncAwaitPractice = async () => {
 
 //   })
 //   .catch(err => console.log(`Uh oh.... ${err}`))
-
 
 // fs.readFile(`${__dirname}/dog.txt`, (err, data) => {
 //   console.log(`Breed: ${data}`)
