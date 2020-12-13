@@ -26,17 +26,17 @@ const asyncAwaitPractice = async () => {
         `https://dog.ceo/api/breed/${fileData}/images/random`
       )
       var superAgentDataTextMessage = JSON.parse(superAgentData.text).message
-      console.log(`data from superagent: ${superAgentDataTextMessage}\n`)
+    //   console.log(`data from superagent: ${superAgentDataTextMessage}\n`)
       const final = await writeFilePro('dog-img.txt', superAgentData)
   
-      console.log('all done 🥳')
+      console.log('asyncAwaitPractice(): all done 🥳')
     } catch (err) {
       console.log('error: ', err)
     }
   }
   console.log('1: prior to async function');
   const dog = asyncAwaitPractice()
-  console.log('2: async call', dog);
+  console.log('2: asyncAwaitPractice() call:', dog);
   console.log('3: after to async function');
 
 // readFilePro(`${__dirname}/dog.txt`)
