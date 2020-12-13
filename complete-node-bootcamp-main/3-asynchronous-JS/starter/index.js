@@ -35,8 +35,8 @@ const asyncAwaitPractice = async () => {
     }
   }
   console.log('1: prior to async function');
-  const dog = asyncAwaitPractice()
-  console.log('2: asyncAwaitPractice() call:', dog);
+  const asyncCall = asyncAwaitPractice()
+  console.log('2: asyncAwaitPractice() call:', asyncCall);
   console.log('3: after to async function');
 
 // readFilePro(`${__dirname}/dog.txt`)
