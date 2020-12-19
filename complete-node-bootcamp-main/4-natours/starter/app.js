@@ -49,15 +49,14 @@ app.post('/api/v1/tours', (req, res) => {
 
 app.get('/api/v1/tours/:id', (req, res) => {
   const { id } = req.params
+  const selectedTour = tours[id]
 
-  if (id > tours.length) {
+  if (!selectedTour) {
     return res.status(404).json({
       status: 'failed',
       message: 'element not found'
     })
   }
-
-  const selectedTour = tours[id]
 
   res.status(200).json({
     status: 'success',
