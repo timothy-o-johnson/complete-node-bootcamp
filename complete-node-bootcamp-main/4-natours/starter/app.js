@@ -33,7 +33,7 @@ app.get('/api/v1/tours', (req, res) => {
 })
 
 app.post('/api/v1/tours', (req, res) => {
-  const newId =  tours.length
+  const newId = tours.length
   const newTour = Object.assign({ id: newId }, req.body)
 
   tours.push(newTour)
@@ -44,6 +44,23 @@ app.post('/api/v1/tours', (req, res) => {
         tour: newTour
       }
     })
+  })
+})
+
+app.post('/api/v1/tours/:id', (req, res) => {
+  var params = req.params
+  console.log('params', params)
+
+  var { id } = params
+  console.log('id', id)
+
+  var selectedTour = tours[id]
+  res.status(200).json({
+    status: 'success',
+    results: 1,
+    data: {
+      selectedTour
+    }
   })
 })
 
