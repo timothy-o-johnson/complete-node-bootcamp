@@ -47,14 +47,18 @@ app.post('/api/v1/tours', (req, res) => {
   })
 })
 
-app.post('/api/v1/tours/:id', (req, res) => {
-  var params = req.params
-  console.log('params', params)
+app.get('/api/v1/tours/:id', (req, res) => {
+  const { id } = req.params
 
-  var { id } = params
-  console.log('id', id)
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'element not found'
+    })
+  }
 
-  var selectedTour = tours[id]
+  const selectedTour = tours[id]
+
   res.status(200).json({
     status: 'success',
     results: 1,
