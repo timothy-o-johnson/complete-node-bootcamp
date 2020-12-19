@@ -16,11 +16,11 @@ app.use(express.json())
 //   res.send(`you can post to this endpoint...`)
 // })
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-)
+var toursDataBase = `${__dirname}/dev-data/data/tours-simple.json`
 
-console.log(`tours ${JSON.stringify(tours)}`)
+const tours = JSON.parse(fs.readFileSync(toursDataBase))
+
+// console.log(`tours ${JSON.stringify(tours)}`)
 
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
@@ -32,11 +32,19 @@ app.get('/api/v1/tours', (req, res) => {
   })
 })
 
-app.post('/api/v1/tours', (req, res) =>{
-    var body = JSON.stringify(req.body)
-    console.log(`req.body:\n ${body}`);
-    res.status(200).send('hello, data has been posted')
+app.post('/api/v1/tours', (req, res) => {
+  const newId =  tours.length
+  const newTour = Object.assign({ id: newId }, req.body)
 
+  tours.push(newTour)
+  fs.writeFile(toursDataBase, JSON.stringify(tours), err => {
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour
+      }
+    })
+  })
 })
 
 app.listen(port, () => {
