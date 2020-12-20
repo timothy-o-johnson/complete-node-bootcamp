@@ -7,33 +7,11 @@ const port = 3000
 
 app.use(express.json())
 
-// app.get('/', (req, res) => {
-//   res
-//     .status(200)
-//     .json({ message: 'Hello from the server side', app: 'Natours' })
-// })
-
-// app.post('/', (req, res) => {
-//   res.send(`you can post to this endpoint...`)
-// })
-
 var toursDataBase = `${__dirname}/dev-data/data/tours-simple.json`
 
 const tours = JSON.parse(fs.readFileSync(toursDataBase))
 
-// console.log(`tours ${JSON.stringify(tours)}`)
-
-app.get('/api/v1/tours', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours
-    }
-  })
-})
-
-app.post('/api/v1/tours', (req, res) => {
+const addATour = (req, res) => {
   const newId = tours.length
   const newTour = Object.assign({ id: newId }, req.body)
 
@@ -46,9 +24,36 @@ app.post('/api/v1/tours', (req, res) => {
       }
     })
   })
-})
+}
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const deleteATour = (req, res) => {
+  const { id } = req.params
+  const selectedTour = tours[id]
+
+  if (!selectedTour) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Invalid ID'
+    })
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  })
+}
+
+const getAllTours = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours
+    }
+  })
+}
+
+const getASingleTour = (req, res) => {
   const { id } = req.params
   const selectedTour = tours[id]
 
@@ -66,9 +71,13 @@ app.get('/api/v1/tours/:id', (req, res) => {
       selectedTour
     }
   })
-})
+}
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const setUpListener = () => {
+  console.log(`App running on port ${port}...`)
+}
+
+const updateATour = (req, res) => {
   const { id } = req.params
   const selectedTour = tours[id]
 
@@ -82,29 +91,19 @@ app.patch('/api/v1/tours/:id', (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
-        tour: "updated tour..."    
+      tour: 'updated tour...'
     }
   })
-})
+}
 
+app.get('/api/v1/tours', getAllTours)
 
-app.delete('/api/v1/tours/:id', (req, res) => {
-    const { id } = req.params
-    const selectedTour = tours[id]
-  
-    if (!selectedTour) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'Invalid ID'
-      })
-    }
-  
-    res.status(204).json({
-      status: 'success',
-      data: null
-    })
-  })
-  
-app.listen(port, () => {
-  console.log(`App running on port ${port}...`)
-})
+app.post('/api/v1/tours', addATour)
+
+app.get('/api/v1/tours/:id', getASingleTour)
+
+app.patch('/api/v1/tours/:id', updateATour)
+
+app.delete('/api/v1/tours/:id', deleteATour)
+
+app.listen(port, setUpListener)
