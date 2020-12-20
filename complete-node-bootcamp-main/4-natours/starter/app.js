@@ -1,3 +1,4 @@
+const { response } = require('express')
 const express = require('express')
 const fs = require('fs')
 
@@ -63,6 +64,25 @@ app.get('/api/v1/tours/:id', (req, res) => {
     results: 1,
     data: {
       selectedTour
+    }
+  })
+})
+
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const { id } = req.params
+  const selectedTour = tours[id]
+
+  if (!selectedTour) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Invalid ID'
+    })
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+        tour: "updated tour..."    
     }
   })
 })
