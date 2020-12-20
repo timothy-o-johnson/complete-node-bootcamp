@@ -74,7 +74,7 @@ const getASingleTour = (req, res) => {
 }
 
 const setUpListener = () => {
-  console.log(`App running on port ${port}...`)
+  console.log(`App is running on port ${port}...`)
 }
 
 const updateATour = (req, res) => {
@@ -96,14 +96,21 @@ const updateATour = (req, res) => {
   })
 }
 
-app.get('/api/v1/tours', getAllTours)
+// app.get('/api/v1/tours', getAllTours)
+// app.post('/api/v1/tours', addATour)
+// app.get('/api/v1/tours/:id', getASingleTour)
+// app.patch('/api/v1/tours/:id', updateATour)
+// app.delete('/api/v1/tours/:id', deleteATour)
 
-app.post('/api/v1/tours', addATour)
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(addATour)
 
-app.get('/api/v1/tours/:id', getASingleTour)
-
-app.patch('/api/v1/tours/:id', updateATour)
-
-app.delete('/api/v1/tours/:id', deleteATour)
+app
+  .route('/api/v1/tours/:id')
+  .get(getASingleTour)
+  .patch(updateATour)
+  .delete(deleteATour)
 
 app.listen(port, setUpListener)
