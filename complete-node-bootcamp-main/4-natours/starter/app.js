@@ -96,12 +96,6 @@ const updateATour = (req, res) => {
   })
 }
 
-// app.get('/api/v1/tours', getAllTours)
-// app.post('/api/v1/tours', addATour)
-// app.get('/api/v1/tours/:id', getASingleTour)
-// app.patch('/api/v1/tours/:id', updateATour)
-// app.delete('/api/v1/tours/:id', deleteATour)
-
 app
   .route('/api/v1/tours')
   .get(getAllTours)
