@@ -5,7 +5,14 @@ const fs = require('fs')
 const app = express()
 const port = 3000
 
+// add middleware
+// middleware is added in order
+// don't forget to call the next parameter
 app.use(express.json())
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString()
+  next()
+})
 
 var toursDataBase = `${__dirname}/dev-data/data/tours-simple.json`
 
@@ -37,9 +44,12 @@ const deleteATour = (req, res) => {
     })
   }
 
-  res.status(204).json({
+  res.status(418).json({
     status: 'success',
-    data: null
+    data: {
+      message: `${id} has been deleted`,
+      requestedAt: req.requestTime
+    }
   })
 }
 
