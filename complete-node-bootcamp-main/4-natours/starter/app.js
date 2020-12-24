@@ -1,13 +1,15 @@
 const { response } = require('express')
 const express = require('express')
 const fs = require('fs')
+const morgan = require('morgan')
 
 const app = express()
 const port = 3000
 
-// add middleware
-// middleware is added in order
-// don't forget to call the next parameter
+// (1) MIDDLEWARE
+  // middleware is added in order
+  // don't forget to call the next parameter
+app.use(morgan('dev'))
 app.use(express.json())
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString()
@@ -18,6 +20,7 @@ var toursDataBase = `${__dirname}/dev-data/data/tours-simple.json`
 
 const tours = JSON.parse(fs.readFileSync(toursDataBase))
 
+// (2) ROUTE HANDLERS
 const addATour = (req, res) => {
   const newId = tours.length
   const newTour = Object.assign({ id: newId }, req.body)
@@ -106,6 +109,8 @@ const updateATour = (req, res) => {
   })
 }
 
+// (3) ROUTES
+
 app
   .route('/api/v1/tours')
   .get(getAllTours)
@@ -117,4 +122,5 @@ app
   .patch(updateATour)
   .delete(deleteATour)
 
+  // (4) START SERVER
 app.listen(port, setUpListener)
