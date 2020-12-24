@@ -7,8 +7,8 @@ const app = express()
 const port = 3000
 
 // (1) MIDDLEWARE
-  // middleware is added in order
-  // don't forget to call the next parameter
+// middleware is added in order
+// don't forget to call the next parameter
 app.use(morgan('dev'))
 app.use(express.json())
 app.use((req, res, next) => {
@@ -36,6 +36,10 @@ const addATour = (req, res) => {
   })
 }
 
+const createUser = (req, res) => {
+  errorMessage(req, res)
+}
+
 const deleteATour = (req, res) => {
   const { id } = req.params
   const selectedTour = tours[id]
@@ -56,13 +60,14 @@ const deleteATour = (req, res) => {
   })
 }
 
-const getAllTours = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours
-    }
+const deleteUser = (req, res) => {
+  errorMessage(req, res)
+}
+
+const errorMessage = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'this route is not yet defined!'
   })
 }
 
@@ -84,6 +89,24 @@ const getASingleTour = (req, res) => {
       selectedTour
     }
   })
+}
+
+const getAllTours = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours
+    }
+  })
+}
+
+const getAllUsers = (req, res) => {
+  errorMessage(req, res)
+}
+
+const getUser = (req, res) => {
+  errorMessage(req, res)
 }
 
 const setUpListener = () => {
@@ -109,6 +132,10 @@ const updateATour = (req, res) => {
   })
 }
 
+const updateUser = (req, res) => {
+  errorMessage(req, res)
+}
+
 // (3) ROUTES
 
 app
@@ -122,5 +149,16 @@ app
   .patch(updateATour)
   .delete(deleteATour)
 
-  // (4) START SERVER
+app
+  .route('/api/v1/users')
+  .get(getAllUsers)
+  .post(createUser)
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser)
+
+// (4) START SERVER
 app.listen(port, setUpListener)
