@@ -11,8 +11,11 @@ const app = express()
 // (1) MIDDLEWARE
 // middleware is added in order
 // don't forget to call the next parameter
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+
 app
-  .use(morgan('dev'))
   .use(express.json())
   .use(express.static(`${__dirname}/public`))
   .use((req, res, next) => {
@@ -21,6 +24,5 @@ app
   })
   .use('/api/v1/tours', tourRouter)
   .use('/api/v1/users', userRouter)
-
 
 module.exports = app
