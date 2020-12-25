@@ -137,28 +137,33 @@ const updateUser = (req, res) => {
 }
 
 // (3) ROUTES
+const tourRouter = express.Router()
+const userRouter = express.Router()
 
-app
-  .route('/api/v1/tours')
+tourRouter
+  .route('/')
   .get(getAllTours)
   .post(addATour)
 
-app
-  .route('/api/v1/tours/:id')
+tourRouter
+  .route('/:id')
   .get(getASingleTour)
   .patch(updateATour)
   .delete(deleteATour)
 
-app
-  .route('/api/v1/users')
+userRouter
+  .route('/')
   .get(getAllUsers)
   .post(createUser)
 
-app
-  .route('/api/v1/users/:id')
+userRouter
+  .route('/:id')
   .get(getUser)
   .patch(updateUser)
   .delete(deleteUser)
+
+app.use('/api/v1/tours', tourRouter)
+app.use('/api/v1/users', userRouter)
 
 // (4) START SERVER
 app.listen(port, setUpListener)
