@@ -14,6 +14,7 @@ const app = express()
 app
   .use(morgan('dev'))
   .use(express.json())
+  .use(express.static(`${__dirname}/public`))
   .use((req, res, next) => {
     req.requestTime = new Date().toISOString()
     next()
