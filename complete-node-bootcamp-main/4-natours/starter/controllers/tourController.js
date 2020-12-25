@@ -20,11 +20,26 @@ exports.addATour = (req, res) => {
   })
 }
 
+exports.checkBody = (req, res, next) => {
+  const body = req.body
+  console.log(`checkBody, body: ${JSON.stringify(body)}`)
+  const containProps = body['name'] && body['price']
+
+  if (!containProps) {
+    return res.status(400).json({
+      status: 'failed',
+      message: `missing 'name' and 'price' properties`
+    })
+  }
+
+  next()
+}
+
 exports.checkId = (req, res, next, val) => {
   const selectedTour = tours[val]
 
-  console.log(`middleware is running!\ntour id is ${val}`);
-  
+  // checkBody(req, res, next)
+  console.log(`middleware is running!\ntour id is ${val}`)
 
   if (!selectedTour) {
     return res.status(404).json({
