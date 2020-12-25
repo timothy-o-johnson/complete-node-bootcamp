@@ -20,9 +20,11 @@ exports.addATour = (req, res) => {
   })
 }
 
-exports.deleteATour = (req, res) => {
-  const { id } = req.params
-  const selectedTour = tours[id]
+exports.checkId = (req, res, next, val) => {
+  const selectedTour = tours[val]
+
+  console.log(`middleware is running!\ntour id is ${val}`);
+  
 
   if (!selectedTour) {
     return res.status(404).json({
@@ -31,6 +33,10 @@ exports.deleteATour = (req, res) => {
     })
   }
 
+  next()
+}
+
+exports.deleteATour = (req, res) => {
   res.status(418).json({
     status: 'success',
     data: {
@@ -54,13 +60,6 @@ exports.getASingleTour = (req, res) => {
   const { id } = req.params
   const selectedTour = tours[id]
 
-  if (!selectedTour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'element not found'
-    })
-  }
-
   res.status(200).json({
     status: 'success',
     results: 1,
@@ -72,19 +71,11 @@ exports.getASingleTour = (req, res) => {
 
 exports.updateATour = (req, res) => {
   const { id } = req.params
-  const selectedTour = tours[id]
-
-  if (!selectedTour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Invalid ID'
-    })
-  }
 
   res.status(200).json({
     status: 'success',
     data: {
-      tour: 'updated tour...'
+      tour: `updated tour... ${id}`
     }
   })
 }
