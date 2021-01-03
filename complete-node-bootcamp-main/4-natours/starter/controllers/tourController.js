@@ -5,34 +5,27 @@ let toursDataBase = `${__dirname}/../dev-data/data/tours-simple.json`
 
 // const tours = JSON.parse(fs.readFileSync(toursDataBase))
 
-exports.addATour = (req, res) => {
-  const newId = null // tours.length
-  const newTour = Object.assign({ id: newId }, req.body)
+exports.addATour = async (req, res) => {
+  try {
+    // const newId = null // tours.length
+    // const newTour = Object.assign({ id: newId }, req.body)
 
-  tours.push(newTour)
-  fs.writeFile(toursDataBase, JSON.stringify(tours), err => {
+    // Tour.create({}) = async(req, res)
+
+    const newTour = await Tour.create(req.body)
+
     res.status(201).json({
       status: 'success',
       data: {
         tour: newTour
       }
     })
-  })
-}
-
-exports.checkBody = (req, res, next) => {
-  const body = req.body
-  console.log(`checkBody, body: ${JSON.stringify(body)}`)
-  const containProps = body['name'] && body['price']
-
-  if (!containProps) {
-    return res.status(400).json({
-      status: 'failed',
-      message: `missing 'name' and 'price' properties`
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'invalid data set'
     })
   }
-
-  next()
 }
 
 exports.deleteATour = (req, res) => {
@@ -45,27 +38,46 @@ exports.deleteATour = (req, res) => {
   })
 }
 
-exports.getAllTours = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    data: {
-      tours
-    }
-  })
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find()
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours
+      }
+    })
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    })
+  }
 }
 
-exports.getASingleTour = (req, res) => {
-  const { id } = req.params
-  const selectedTour = ''//tours[id]
+exports.getASingleTour = async (req, res) => {
+  try {
+    const id = req.params.id
+    // console.log(`id: ${id}`)
+    
+    const tour = await Tour.findById(id)
+    // Tour.find({ "_id" : id})
 
-  res.status(200).json({
-    status: 'success',
-    results: 1,
-    data: {
-      selectedTour
-    }
-  })
+    res.status(200).json({
+      status: 'success',
+      results: 1,
+      data: {
+        tour
+      }
+    })
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    })
+  }
 }
 
 exports.updateATour = (req, res) => {
