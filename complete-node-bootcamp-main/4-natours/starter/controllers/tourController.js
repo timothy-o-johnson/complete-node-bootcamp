@@ -61,7 +61,7 @@ exports.getASingleTour = async (req, res) => {
   try {
     const id = req.params.id
     // console.log(`id: ${id}`)
-    
+
     const tour = await Tour.findById(id)
     // Tour.find({ "_id" : id})
 
@@ -80,13 +80,33 @@ exports.getASingleTour = async (req, res) => {
   }
 }
 
-exports.updateATour = (req, res) => {
-  const { id } = req.params
+exports.updateATour = async (req, res) => {
+  try {
+    const { id } = req.params
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: `updated tour... ${id}`
-    }
-  })
+    const tour = await Tour.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    })
+    // const keys = Object.keys(tour)
+    // console.log(`keys: ${keys}`)
+    // console.log(`tour.fields: ${tour._fields}`)
+     console.log(`successful!`)
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour
+      }
+    })
+
+    console.log(`successful!`)
+  } catch (error) {
+    // console.log(`error in updateATour: ${error}`)
+
+    res.status(404).json({
+      status: 'failed to update',
+      message: error
+    })
+  }
 }
