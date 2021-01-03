@@ -1,12 +1,12 @@
-const fs = require('fs')
+const Tour = require('../models/tourModels')
 
 let toursDataBase = `${__dirname}/../dev-data/data/tours-simple.json`
 // console.log( `path: ${toursDataBase} !`);
 
-const tours = JSON.parse(fs.readFileSync(toursDataBase))
+// const tours = JSON.parse(fs.readFileSync(toursDataBase))
 
 exports.addATour = (req, res) => {
-  const newId = tours.length
+  const newId = null // tours.length
   const newTour = Object.assign({ id: newId }, req.body)
 
   tours.push(newTour)
@@ -35,22 +35,6 @@ exports.checkBody = (req, res, next) => {
   next()
 }
 
-exports.checkId = (req, res, next, val) => {
-  const selectedTour = tours[val]
-
-  // checkBody(req, res, next)
-  console.log(`middleware is running!\ntour id is ${val}`)
-
-  if (!selectedTour) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Invalid ID'
-    })
-  }
-
-  next()
-}
-
 exports.deleteATour = (req, res) => {
   res.status(418).json({
     status: 'success',
@@ -64,7 +48,7 @@ exports.deleteATour = (req, res) => {
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
-    results: tours.length,
+    // results: tours.length,
     data: {
       tours
     }
@@ -73,7 +57,7 @@ exports.getAllTours = (req, res) => {
 
 exports.getASingleTour = (req, res) => {
   const { id } = req.params
-  const selectedTour = tours[id]
+  const selectedTour = ''//tours[id]
 
   res.status(200).json({
     status: 'success',
