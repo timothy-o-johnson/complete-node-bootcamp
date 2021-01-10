@@ -28,14 +28,26 @@ exports.addATour = async (req, res) => {
   }
 }
 
-exports.deleteATour = (req, res) => {
-  res.status(418).json({
-    status: 'success',
-    data: {
-      message: `${id} has been deleted`,
-      requestedAt: req.requestTime
-    }
-  })
+exports.deleteATour = async (req, res) => {
+  try {
+    const id = req.params.id
+    const deletedTour = await Tour.findOneAndDelete({ _id: id })
+
+    res.status(418).json({
+      status: 'success',
+      data: {
+        message: `${id} has been deleted`,
+        requestedAt: req.requestTime,
+        deletedTour
+      }
+    })
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'invalid data set',
+      err
+    })
+  }
 }
 
 exports.getAllTours = async (req, res) => {
@@ -91,7 +103,7 @@ exports.updateATour = async (req, res) => {
     // const keys = Object.keys(tour)
     // console.log(`keys: ${keys}`)
     // console.log(`tour.fields: ${tour._fields}`)
-     console.log(`successful!`)
+    console.log(`successful!`)
 
     res.status(200).json({
       status: 'success',
