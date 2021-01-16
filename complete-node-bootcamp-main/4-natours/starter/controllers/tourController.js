@@ -23,7 +23,7 @@ exports.addATour = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: 'invalid data set'
+      message: err
     })
   }
 }
