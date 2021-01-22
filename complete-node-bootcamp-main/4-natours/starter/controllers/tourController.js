@@ -60,7 +60,6 @@ exports.deleteATour = async (req, res) => {
 
 exports.getAllTours = async (req, res) => {
   try {
-   
     // EXECUTE QUERY
     const features = new APIFeatures(Tour.find(), req.query)
       .filter()
@@ -83,6 +82,50 @@ exports.getAllTours = async (req, res) => {
       results: tours.length,
       data: {
         tours
+      }
+    })
+  } catch (err) {
+    console.log('error:', err)
+
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    })
+  }
+}
+
+exports.getTourStats = async (req, res) => {
+  try {
+    // add await, or else returns aggregate object
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } }
+      },
+      {
+        $group: {
+          _id: { $toUpper: '$difficulty' },
+          // _id: '$ratingsAverage',
+          num: { $sum: 1 }, // count for each tour
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' }
+        }
+      },
+      { // our documents (results) fields have been updaed to reflect the fields
+        $sort: { num: -1}
+      },
+      // {
+      //   $match: { _id: {$ne: 'EASY'}}
+      // }
+    ])
+
+    res.status(200).json({
+      status: 'success',
+      results: stats.length,
+      data: {
+        stats
       }
     })
   } catch (err) {
