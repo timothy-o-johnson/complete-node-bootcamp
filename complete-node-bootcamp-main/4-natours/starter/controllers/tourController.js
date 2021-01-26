@@ -94,6 +94,59 @@ exports.getAllTours = async (req, res) => {
   }
 }
 
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates'
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $month: '$startDates'
+          },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' }
+        }
+      },
+      {
+        $addFields: { month: '$_id' } // set one field value to another field
+      },
+      { $project: { _id: 0 } }, // show/hide field: 0/1
+      {
+        $sort: { numTourStarts: -1 }
+      },
+      {
+        $limit: 6
+      }
+    ])
+
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        plan
+      }
+    })
+  } catch (err) {
+    console.log('error:', err)
+
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    })
+  }
+}
+
 exports.getTourStats = async (req, res) => {
   try {
     // add await, or else returns aggregate object
@@ -113,9 +166,10 @@ exports.getTourStats = async (req, res) => {
           maxPrice: { $max: '$price' }
         }
       },
-      { // our documents (results) fields have been updaed to reflect the fields
-        $sort: { num: -1}
-      },
+      {
+        // our documents (results) fields have been updaed to reflect the fields
+        $sort: { num: -1 }
+      }
       // {
       //   $match: { _id: {$ne: 'EASY'}}
       // }
