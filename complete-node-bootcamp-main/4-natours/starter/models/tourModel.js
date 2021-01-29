@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
 
 const tourSchema = new mongoose.Schema(
   {
@@ -31,6 +32,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    slug: String,
     price: {
       type: Number,
       required: [true, 'A tour must have a price']
@@ -68,6 +70,24 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7
+})
+
+
+// DOCOMENT MIDDLEWARE, runs before .save() and .create()
+tourSchema.pre('save', function(next){
+  console.log(`document pre middleware ${this}`);
+  this.slug =slugify(this.name, { lower: true})
+  next()
+})
+
+tourSchema.pre('save', function(next){
+  console.log('document pre middleware: will save document now');
+  next()
+})
+
+tourSchema.post('save', function(doc, next){
+  console.log(`document post middleware, doc: ${doc}`);
+  next()
 })
 
 const Tour = mongoose.model('Tour', tourSchema)

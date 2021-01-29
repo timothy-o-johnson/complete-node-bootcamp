@@ -1,4 +1,4 @@
-const Tour = require('../models/tourModels')
+const Tour = require('../models/tourModel')
 const APIFeatures = require('./../utils/apiFeatures')
 
 let toursDataBase = `${__dirname}/../dev-data/data/tours-simple.json`
