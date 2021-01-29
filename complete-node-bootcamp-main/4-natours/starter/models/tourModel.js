@@ -56,6 +56,10 @@ const tourSchema = new mongoose.Schema(
       type: Date,
       default: Date.now()
     },
+    secretTour: {
+      type: Boolean,
+      default: false
+    },
     startDates: [Date]
   },
   {
@@ -64,29 +68,51 @@ const tourSchema = new mongoose.Schema(
   }
 )
 
-// virtual properties don't get stored in the data 
-//base and cannot be accessed as fields like regular 
+// virtual properties don't get stored in the data
+//base and cannot be accessed as fields like regular
 // fields
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7
 })
 
+// // DOCOMENT MIDDLEWARE, runs before .save() and .create()
+// tourSchema.pre('save', function(next){
+//   console.log(`document pre middleware ${this}`);
+//   this.slug =slugify(this.name, { lower: true})
+//   next()
+// })
 
-// DOCOMENT MIDDLEWARE, runs before .save() and .create()
-tourSchema.pre('save', function(next){
-  console.log(`document pre middleware ${this}`);
-  this.slug =slugify(this.name, { lower: true})
+// tourSchema.pre('save', function(next){
+//   console.log('document pre middleware: will save document now');
+//   next()
+// })
+
+// tourSchema.post('save', function(doc, next){
+//   console.log(`document post middleware, doc: ${doc}`);
+//   next()
+// })
+
+// QUERY middleware
+tourSchema.pre(/^find/, function (next) {
+  console.log('mongoose query middleware, pre find...')
+
+  this.find({ secretTour: { $ne: true } })
+  this.start = Date.now()
+
+  console.log(this)
+
   next()
 })
 
-tourSchema.pre('save', function(next){
-  console.log('document pre middleware: will save document now');
-  next()
-})
+tourSchema.pre(/^find/, function (docs, next) {
+  console.log('mongoose query middleware, post find...')
 
-tourSchema.post('save', function(doc, next){
-  console.log(`document post middleware, doc: ${doc}`);
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  
+
+  console.log(docs)
+
   next()
 })
 
