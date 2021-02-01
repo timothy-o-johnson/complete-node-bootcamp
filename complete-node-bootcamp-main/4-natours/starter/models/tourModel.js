@@ -105,7 +105,7 @@ tourSchema.pre(/^find/, function (next) {
   next()
 })
 
-tourSchema.pre(/^find/, function (docs, next) {
+tourSchema.post(/^find/, function (docs, next) {
   console.log('mongoose query middleware, post find...')
 
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
