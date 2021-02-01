@@ -93,26 +93,40 @@ tourSchema.virtual('durationWeeks').get(function () {
 //   next()
 // })
 
-// QUERY middleware
+// QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   console.log('mongoose query middleware, pre find...')
 
   this.find({ secretTour: { $ne: true } })
   this.start = Date.now()
 
-  console.log(this)
+  // console.log(this)
 
   next()
 })
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log('mongoose query middleware, post find...')
-
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
   
+  // console.log(docs)
 
-  console.log(docs)
+  next()
+})
 
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function(next){
+  console.log('mongoose aggregate middleware, pre...');
+  this.pipeline().unshift({
+    $match : {
+      secretTour : {
+        $ne: true
+      }
+    }
+  })
+  
+  console.log(this);
+  
   next()
 })
 
