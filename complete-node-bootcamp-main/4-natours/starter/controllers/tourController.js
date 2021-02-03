@@ -221,7 +221,7 @@ exports.updateATour = async (req, res) => {
 
     const tour = await Tour.findByIdAndUpdate(id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true // allows to rerun validator
     })
     // const keys = Object.keys(tour)
     // console.log(`keys: ${keys}`)
