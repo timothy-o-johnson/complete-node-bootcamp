@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
-
+const validator = require('validator')
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -9,7 +9,8 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       maxlength: [40, 'A tour must be less than or equal to 40 characters'],
-      minlength: [10, 'A tour must be greater than or equal to 10 characters']
+      minlength: [10, 'A tour must be greater than or equal to 10 characters'],
+      // validate: [validator.isAlpha, 'tour must only contain characters']
     },
     duration: {
       type: Number,
@@ -23,7 +24,7 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a difficulty'],
       enum: {
-        values : ['easy', 'medium', 'difficulty'],
+        values: ['easy', 'medium', 'difficulty'],
         message: 'Difficulty must be: easy, medium, or difficult'
       }
     },
@@ -35,7 +36,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 4.5,
       max: [5, 'Rating must be less than 5.0'],
-      min: [1, 'Rating must be greater than 1.0'],
+      min: [1, 'Rating must be greater than 1.0']
     },
     ratingsQuantity: {
       type: Number,
@@ -46,7 +47,15 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price']
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (value) {
+          return value < this.price // only works on when creating a new document
+        },
+        message: 'price ({VALUE}) discount cannot be greater than the price'
+      }
+    },
     summary: {
       type: String,
       trim: true,
@@ -116,26 +125,26 @@ tourSchema.pre(/^find/, function (next) {
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log('mongoose query middleware, post find...')
-  console.log(`Query took ${Date.now() - this.start} milliseconds`);
-  
+  console.log(`Query took ${Date.now() - this.start} milliseconds`)
+
   // console.log(docs)
 
   next()
 })
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function(next){
-  console.log('mongoose aggregate middleware, pre...');
+tourSchema.pre('aggregate', function (next) {
+  console.log('mongoose aggregate middleware, pre...')
   this.pipeline().unshift({
-    $match : {
-      secretTour : {
+    $match: {
+      secretTour: {
         $ne: true
       }
     }
   })
-  
-  console.log(this);
-  
+
+  console.log(this)
+
   next()
 })
 
