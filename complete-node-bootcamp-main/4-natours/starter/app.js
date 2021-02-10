@@ -24,5 +24,11 @@ app
   })
   .use('/api/v1/tours', tourRouter)
   .use('/api/v1/users', userRouter)
+  .all('*', (req, res, next) =>{
+    res.status(404).json({
+      status:'fail',
+      message: `ain't no '${req.originalUrl}' on this server!`
+    })
+  })
 
 module.exports = app
