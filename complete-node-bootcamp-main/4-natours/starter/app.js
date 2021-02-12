@@ -3,6 +3,8 @@ const express = require('express')
 
 const morgan = require('morgan')
 
+const AppError = require('./utils/appError')
+const globalErrorHandler = require('./controllers/errorController')
 const tourRouter = require('./routes/tourRoutes')
 const userRouter = require('./routes/userRoutes')
 
@@ -30,20 +32,14 @@ app
     //   message: `ain't no '${req.originalUrl}' on this server!`
     // })
 
-    const err = new Error(`ain't no '${req.originalUrl}' on this mutha-effin server!`)
-    err.statu = 'fail'
-    err.statusCode = 404
+    // const err = new Error(`ain't no '${req.originalUrl}' on this mutha-effin server!`)
+    // err.statu = 'fail'
+    // err.statusCode = 404
 
-    next(err) // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
-  })
-  .use((err, req, res, next) => {
-    err.statusCode = err.StatusCode || '500'
-    err.status = err.status || 'error'
 
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    })
+
+    next(new AppError(`ain't no '${req.originalUrl}' on this mutha-effin server!`, 404 )) // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
   })
+  .use(globalErrorHandler)
 
 module.exports = app
