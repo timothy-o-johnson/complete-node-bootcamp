@@ -1,6 +1,8 @@
 const Tour = require('../models/tourModel')
 const APIFeatures = require('./../utils/apiFeatures')
 const catchAsync = require('./../utils/catchAsync')
+const AppError = require('./../utils/appError')
+
 
 let toursDataBase = `${__dirname}/../dev-data/data/tours-simple.json`
 // console.log( `path: ${toursDataBase} !`);
@@ -25,10 +27,14 @@ exports.aliasTopTours = (req, res, next) => {
   next()
 }
 
-exports.deleteATour = catchAsync(async (req, res) => {
-  try {
+exports.deleteATour = catchAsync(async (req, res, next) => {
+
     const id = req.params.id
     const deletedTour = await Tour.findOneAndDelete({ _id: id })
+
+    if(!deletedTour){
+    return next(new AppError(`ain't no like that in hea'`, 404))
+  }
 
     res.status(418).json({
       status: 'success',
@@ -38,13 +44,7 @@ exports.deleteATour = catchAsync(async (req, res) => {
         deletedTour
       }
     })
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'invalid data set',
-      err
-    })
-  }
+
 })
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
@@ -160,6 +160,10 @@ exports.getASingleTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(id)
   // Tour.find({ "_id" : id})
 
+  if(!tour){
+    return next(new AppError(`ain't no like that in hea'`, 404))
+  }
+
   res.status(200).json({
     status: 'success',
     results: 1,
@@ -176,6 +180,11 @@ exports.updateATour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true // allows to rerun validator
   })
+
+  if(!tour){
+    return next(new AppError(`ain't no like that in hea'`, 404))
+  }
+
   // const keys = Object.keys(tour)
   // console.log(`keys: ${keys}`)
   // console.log(`tour.fields: ${tour._fields}`)
