@@ -24,6 +24,9 @@ app
     req.requestTime = new Date().toISOString()
     next()
   })
+
+// 2) ROUTES
+app
   .use('/api/v1/tours', tourRouter)
   .use('/api/v1/users', userRouter)
   .all('*', (req, res, next) => {
@@ -35,11 +38,17 @@ app
     // const err = new Error(`ain't no '${req.originalUrl}' on this mutha-effin server!`)
     // err.statu = 'fail'
     // err.statusCode = 404
+    console.log('*** getting error ****');
+    
 
-
-
-    next(new AppError(`ain't no '${req.originalUrl}' on this mutha-effin server!`, 404 )) // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
+    next(
+      new AppError(
+        `ain't no '${req.originalUrl}' on this mutha-effin server!`,
+        404
+      )
+    ) // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
   })
-  .use(globalErrorHandler)
+
+app.use(globalErrorHandler)
 
 module.exports = app
