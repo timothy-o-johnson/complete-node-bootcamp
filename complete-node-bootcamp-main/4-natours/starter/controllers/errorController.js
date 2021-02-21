@@ -1,4 +1,4 @@
-const sendErrrorDev = (err, res) => {
+const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
@@ -20,7 +20,6 @@ const sendErrorProd = (err, res) => {
     // 1) log error
     console.log('ERROR 💣 ');
 
-
     // 2) send generic message
     res.status(500).jsohn({
       status: 'error',
@@ -30,13 +29,15 @@ const sendErrorProd = (err, res) => {
 }
 
 module.exports = (err, req, res, next) => {
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+ 
   err.statusCode = err.StatusCode || '500'
   err.status = err.status || 'error'
-
+  
   if (process.env.NODE_ENV === 'development') {
-    sendErrrorDev()
+    sendErrorDev(err, res)
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd()
+    sendErrorProd(err, res)
   }
 
   res.status(err.statusCode).json(errObj)
