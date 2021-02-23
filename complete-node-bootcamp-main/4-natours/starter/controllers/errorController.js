@@ -59,6 +59,3 @@ module.exports = (err, req, res, next) => {
     sendErrorProd(error, res)
   }
 }
-
-
-/Users/timjohnson/Google Drive/Me/Hobbies/Projects/Software Development/complete-node-bootcamp/complete-node-bootcamp-main/4-natours/starter/controllers/errorController.js
