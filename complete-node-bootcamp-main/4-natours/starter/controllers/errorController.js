@@ -17,8 +17,8 @@ const handleDuplicateFieldsDB = err => {
 
 const handleValidationErrorDB = err => {
 
-  let errors = Object.keys(err.errors).map(el => {
-    return err.errors[el].message
+  let errors = Object.values(err.errors).map(el => {
+    return el.message 
   })
 
   const errorsJoined = errors.join('. ')
