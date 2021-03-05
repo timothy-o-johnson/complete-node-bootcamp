@@ -31,8 +31,8 @@ const server = app.listen(port, setUpListener)
 process.on('unhandledRejection', err => {
   console.log('')
   console.log('!!!   unhandledRejection  !!! ')
-  console.log('');
-  
+  console.log('')
+
   console.log(err.name, err.message)
 
   console.log('Shutting down now...')
