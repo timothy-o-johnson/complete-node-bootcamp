@@ -15,6 +15,17 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(message, 400)
 }
 
+const handleValidationErrorDB = err => {
+
+  let errors = Object.keys(err.errors).map(el => {
+    return err.errors[el].message
+  })
+
+  const errorsJoined = errors.join('. ')
+  const message = `Invalid input data: ${errorsJoined} .`
+  return new AppError(message, 400)
+}
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -25,7 +36,7 @@ const sendErrorDev = (err, res) => {
 }
 
 const sendErrorProd = (err, res) => {
-  //operation, trusted error: send message to client
+  // operation, trusted error: send message to client
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -47,9 +58,6 @@ const sendErrorProd = (err, res) => {
 
 module.exports = (err, req, res, next) => {
   console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-  // console.log('JSON.stringify(err)', JSON.stringify(err))
-  console.log('err', err)
-  // console.log('err.name', err.name)
 
   err.statusCode = err.StatusCode || '500'
   err.status = err.status || 'error'
@@ -59,13 +67,11 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err }
     error.name = err.name
-    // error.code = err.code
-
     console.log('JSON.stringify(error)', JSON.stringify(error))
 
     if (error.name === 'CastError') error = handleCastErrorDB(error)
     if (error.code === 11000) error = handleDuplicateFieldsDB(error)
-
+    if (error.name === 'ValidationError') error = handleValidationErrorDB(error)
     sendErrorProd(error, res)
   }
 }

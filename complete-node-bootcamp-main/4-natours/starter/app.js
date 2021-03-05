@@ -39,6 +39,7 @@ app
     // err.statu = 'fail'
     // err.statusCode = 404
     console.log('*** getting error ****');
+    console.log('JSON.stringify(err)', JSON.stringify(err))
     
 
     next(
