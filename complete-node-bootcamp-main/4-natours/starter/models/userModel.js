@@ -26,9 +26,12 @@ const userSchema = new mongoose.Schema(
     passwordConfirmation: {
       type: String,
       required: [true, 'Passwords must match'],
-      validate: function (passwordConfirmation) {
-        return passwordConfirmation === this.password
-      }
+      validate:{
+        // only works on create save (when it hits th server-- server-side?)
+        validator: function (passwordConfirmation) {
+          return passwordConfirmation === this.password
+        }
+      } 
     }
   },
   {
@@ -39,4 +42,4 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model('User', userSchema)
 
-// modules.export = userSchema
+module.exports = User
