@@ -1,6 +1,5 @@
 const { response } = require('express')
 const express = require('express')
-
 const morgan = require('morgan')
 
 const AppError = require('./utils/appError')
@@ -30,24 +29,10 @@ app
   .use('/api/v1/tours', tourRouter)
   .use('/api/v1/users', userRouter)
   .all('*', (req, res, next) => {
-    // res.status(404).json({
-    //   status:'fail',
-    //   message: `ain't no '${req.originalUrl}' on this server!`
-    // })
-
-    // const err = new Error(`ain't no '${req.originalUrl}' on this mutha-effin server!`)
-    // err.statu = 'fail'
-    // err.statusCode = 404
-    console.log('*** getting error ****');
-    console.log('JSON.stringify(err)', JSON.stringify(err))
-    
-
-    next(
-      new AppError(
-        `ain't no '${req.originalUrl}' on this mutha-effin server!`,
-        404
-      )
-    ) // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
+    console.log('*** getting error ***')
+    // console.log('JSON.stringify(err)', JSON.stringify(err))
+    // express assumes that any param sent with next is an error and will skip to the error handling portion of the code
+    next(new AppError(`ain't no '${req.originalUrl}' on this server!`, 404)) 
   })
 
 app.use(globalErrorHandler)
