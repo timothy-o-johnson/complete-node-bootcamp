@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-
+const bcrypt = require('bcryptjs')
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Users must have a name'],
-     },
+      required: [true, 'Users must have a name']
+    },
     email: {
       type: String,
       validate: [validator.isEmail, 'User must have a valid email.'],
@@ -26,12 +26,13 @@ const userSchema = new mongoose.Schema(
     passwordConfirmation: {
       type: String,
       required: [true, 'Passwords must match'],
-      validate:{
-        // only works on create save (when it hits th server-- server-side?)
+      validate: {
+        // only works on create/save (when it hits th server-- server-side?)
         validator: function (passwordConfirmation) {
           return passwordConfirmation === this.password
-        }
-      } 
+        },
+        message: 'passwords are not the same!'
+      }
     }
   },
   {
@@ -39,6 +40,22 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 )
+
+userSchema.pre('save', async function (next) {
+  var passwordModified = this.isModified('password')
+
+  if (!passwordModified) {
+    return next()
+  }
+
+  // hash the password with a cost of 12
+  this.password = await bcrypt.hash(this.password, 12)
+
+  // delete password confirmation field
+  this.passwordConfirmation = undefined
+
+  next()
+})
 
 const User = mongoose.model('User', userSchema)
 
