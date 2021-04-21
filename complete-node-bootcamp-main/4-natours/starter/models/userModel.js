@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -20,7 +21,8 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Users must have a password'],
-      minlength: 8
+      minlength: 8,
+      select: false
     },
 
     passwordConfirmation: {
@@ -32,7 +34,8 @@ const userSchema = new mongoose.Schema(
           return passwordConfirmation === this.password
         },
         message: 'passwords are not the same!'
-      }
+      },
+      select: false
     }
   },
   {
@@ -56,6 +59,14 @@ userSchema.pre('save', async function (next) {
 
   next()
 })
+
+// way to compare hashed password
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword)
+}
 
 const User = mongoose.model('User', userSchema)
 
