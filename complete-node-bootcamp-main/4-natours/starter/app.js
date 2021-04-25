@@ -21,6 +21,8 @@ app
   .use(express.static(`${__dirname}/public`))
   .use((req, res, next) => {
     req.requestTime = new Date().toISOString()
+    console.log('tours!', req.headers);
+    
     next()
   })
 

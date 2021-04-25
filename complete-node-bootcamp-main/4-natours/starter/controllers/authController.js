@@ -67,5 +67,28 @@ exports.login = catchAsync(async (req, res, next) => {
   })
 })
 
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1. get token and confirm existence
+  let token
 
-exports.protect 
+  const authorization = req.headers.authorization
+
+  if (authorization && authorization.startsWith('Bearer')) {
+    token = authorization.split(' ')[1]
+
+    console.log(token)
+  }
+
+  if (!token) {
+    return next(
+      new AppError('you are not logged in! please log in to get access.', '401')
+    )
+  }
+
+  // 2. verify token
+
+  // 3. verify user exists
+
+  // 4. check if user changed passwored after token was issued
+  next()
+})
