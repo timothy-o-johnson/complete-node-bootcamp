@@ -104,28 +104,61 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 4. check if user changed password after token was issued
   const passwordHasChanged = currentUser.changedPasswordAfter(decoded.iat)
-  
+
   if (passwordHasChanged) {
     return next(
       new AppError('user recently changed password! please log in again', 401)
     )
   }
 
-
   // GRANT ACCESS TO PROTECTED ROURE
   req.user = currentUser
   next()
 })
 
-exports.restrictTo = (...roles) =>{
-  return(req, res, next) =>{
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
     // roles = ['admin', 'lead-guide']
     const isAuthorizedUser = roles.includes(req.user.role)
 
-    if(!isAuthorizedUser){
-      return next(new AppError(`you don't have permission to perform this action`, 403))
+    if (!isAuthorizedUser) {
+      return next(
+        new AppError(`you don't have permission to perform this action`, 403)
+      )
     }
 
     next()
   }
 }
+
+exports.forgotPassword = async (req, res, next) => {
+  console.log('in exports.forgotPassword');
+  
+  // 1) get user based on POSTed email
+  const user = await User.findOne({
+    email: req.body.email
+  })
+
+  console.log('user', user);
+  
+
+  if (!user) {
+    return next(new AppError(`there is no user with email address.`, 404))
+  }
+
+  // 2) generate random token
+  const resetToken = user.createPasswordResetToken()
+  console.log('resetToken', resetToken);
+  
+  await user.save({ validateBeforeSave: false })
+
+  res.status(200).json({
+    status: 'success',
+    resetToken // resetToken = await user.createResetPasswordToken();
+  });
+
+  // 3) sent it to user's email.
+  next()
+}
+
+exports.resetPassword = (req, res, next) => {}
