@@ -106,7 +106,7 @@ userSchema.methods.createPasswordResetToken = function () {
   const secondsFactor = 60
   const millisecondsFactor = 1000
 
-  console.log({ resetToken }, this.passwordToken)
+  console.log({ resetToken }, this.passwordResetToken)
 
   this.passwordResetExpires =
     Date.now() + minutes * secondsFactor * millisecondsFactor
