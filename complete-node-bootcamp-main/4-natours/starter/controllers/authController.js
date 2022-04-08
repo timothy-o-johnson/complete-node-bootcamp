@@ -6,6 +6,18 @@ const User = require('./../models/userModel')
 const AppError = require('./../utils/appError')
 const sendEmail = require('./../utils/email')
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id)
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  })
+}
+
 const signToken = id => {
   const jwtSecret = process.env.JWT_SECRET
   const expiresIn = process.env.JWT_EXPIRES_IN
@@ -29,15 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const newUser = await User.create(newUserObj)
 
-  const token = signToken(newUser._id)
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  })
+  createSendToken(newUser, 201, res)
 })
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -64,12 +68,7 @@ exports.login = catchAsync(async (req, res, next) => {
   console.log({ user })
 
   // 3. if all is good, send token
-  const token = signToken(user._id)
-
-  res.status(200).json({
-    status: 'success',
-    token
-  })
+  createSendToken(user, 200, res)
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -113,7 +112,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     )
   }
 
-  // GRANT ACCESS TO PROTECTED ROURE
+  // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser
   next()
 })
@@ -144,7 +143,7 @@ exports.forgotPassword = async (req, res, next) => {
   console.log('user', user)
 
   if (!user) {
-    return next(new AppError(`there is no user with email address.`, 404))
+    return next(new AppError(`there is no user with that email address.`, 404))
   }
 
   // 2) generate random token
@@ -221,17 +220,41 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   })
 
   // 3) update changePasswordAt property for the user
-  const token = signToken(user._id)
-
-  res.status(200).json({
-    status: 'success',
-    token,
-    data: {
-      // user: user
-    }
-  })
+  createSendToken(user, 200, res)
 
   // 4) log the user in, send JWT
 
   next()
+})
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) get user from collection
+
+  console.log('in exports.updatePassword')
+
+  // since the user is logged in we have the id;
+  // because the password is not included in the return, must request it explicitly
+  const user = await User.findById(req.user.id).select('+password')
+
+  // user.findByIdAndUpdate
+
+  console.log('user', user)
+
+  // 2) verify POSTed current password
+  const currentPassword = req.body.passwordCurrent
+
+  const correctPassword = await user.correctPassword(currentPassword, user.password)
+
+  // 3) if so, update password
+  if (correctPassword) {
+    user.password = req.body.password
+    user.passwordConfirmation = req.body.passwordConfirmation
+  } else {
+    return next(new AppError('wrong current password', 401))
+  }
+
+  await user.save()
+
+  // 4) log user in, send JWT
+  createSendToken(user, 200, res)
 })
