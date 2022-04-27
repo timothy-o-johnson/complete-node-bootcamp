@@ -5,7 +5,7 @@ dotenv.config({ path: './config.env' })
 // place this at the time so it can listen for the error throughout the application
 process.on('uncaughtException', err => {
   console.log('')
-  console.log('!!!   uncaughtException  !!! ')
+  console.log('!!!  uncaughtException  !!! ')
   console.log('')
 
   console.log(err.name, err.message)
